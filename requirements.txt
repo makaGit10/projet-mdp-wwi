@@ -1,0 +1,17 @@
+cryptography==50.0.2
+dagster-dbt==0.29.26
+dagster-webserver==1.13.26
+dagster==1.13.26
+dbt-core==1.12.5
+dbt-snowflake==1.12.1
+dlt[snowflake,sql_database]==1.31.0
+pandas==2.3.3
+plotly==7.1.0
+pyarrow==25.0.1
+pyodbc==5.3.0
+python-dotenv==1.2.4
+requests==2.34.2
+snowflake-connector-python[pandas]==4.8.0
+SQLAlchemy==2.1.4
+sqlglot==30.22.0
+streamlit==1.65.0

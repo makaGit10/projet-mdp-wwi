@@ -1,0 +1,346 @@
+version: 2
+
+models:
+  # ------------------------------------------------------------------ DIMENSIONS
+  - name: dim_date
+    description: "Dimension calendrier (2013-2016). Jointure : fct_*.date_key = dim_date.date_key."
+    columns:
+      - name: date_key
+        description: "Cle de date AAAAMMJJ (ex 20160531)"
+        data_tests: [unique, not_null]
+      - name: full_date
+        description: "Date du jour"
+      - name: year
+        description: "Annee"
+      - name: quarter
+        description: "Trimestre (1 a 4)"
+      - name: quarter_label
+        description: "Libelle du trimestre, ex T1-2016"
+      - name: month
+        description: "Numero du mois (1 a 12)"
+      - name: month_name
+        description: "Nom du mois en francais"
+      - name: year_month
+        description: "Mois au format AAAA-MM, pratique pour les series mensuelles"
+      - name: week_of_year
+        description: "Numero de semaine ISO"
+      - name: day_of_month
+        description: "Jour du mois"
+      - name: day_of_week
+        description: "Jour de la semaine ISO (1 = lundi, 7 = dimanche)"
+      - name: day_name
+        description: "Nom du jour en francais"
+      - name: is_weekend
+        description: "Vrai si samedi ou dimanche"
+
+  - name: dim_customer
+    description: "Dimension clients avec leur categorie, groupement d'achat et localisation de livraison."
+    columns:
+      - name: customer_key
+        description: "Identifiant du client"
+        data_tests: [unique, not_null]
+      - name: customer_name
+        description: "Nom du client (magasin)"
+      - name: bill_to_customer_name
+        description: "Client facture (siege du groupement)"
+      - name: is_head_office
+        description: "Vrai si le client est un siege social"
+      - name: customer_category
+        description: "Categorie de client (Novelty Shop, Supermarket, Computer Store, Gift Store, Corporate...)"
+      - name: buying_group
+        description: "Groupement d'achat (Tailspin Toys, Wingtip Toys) ou Independant"
+      - name: city
+        description: "Ville de livraison"
+      - name: state_province
+        description: "Etat / province (Etats-Unis)"
+      - name: sales_territory
+        description: "Territoire commercial (Southeast, Great Lakes, Far West, Plains...)"
+      - name: country
+        description: "Pays"
+      - name: continent
+        description: "Continent"
+      - name: credit_limit
+        description: "Plafond de credit en dollars"
+      - name: payment_days
+        description: "Delai de paiement accorde en jours"
+      - name: standard_discount_percentage
+        description: "Remise standard en pourcentage"
+      - name: is_on_credit_hold
+        description: "Vrai si le compte est bloque pour credit"
+      - name: account_opened_date
+        description: "Date d'ouverture du compte"
+      - name: delivery_method
+        description: "Mode de livraison habituel"
+
+  - name: dim_product
+    description: "Dimension produits (articles en stock)."
+    columns:
+      - name: product_key
+        description: "Identifiant de l'article"
+        data_tests: [unique, not_null]
+      - name: product_name
+        description: "Nom de l'article"
+      - name: stock_group
+        description: "Famille de produits (T-Shirts, Novelty Items, Clothing, Mugs, Computing Novelties, Toys, Packaging Materials, Furry Footwear, USB Novelties)"
+      - name: brand
+        description: "Marque ou 'Sans marque'"
+      - name: size
+        description: "Taille ou 'N/A'"
+      - name: color
+        description: "Couleur ou 'N/A'"
+      - name: unit_package
+        description: "Conditionnement unitaire"
+      - name: outer_package
+        description: "Conditionnement exterieur (carton...)"
+      - name: supplier_name
+        description: "Fournisseur principal de l'article"
+      - name: is_chiller_stock
+        description: "Vrai si l'article est stocke au frais"
+      - name: unit_price
+        description: "Prix de vente unitaire catalogue HT"
+      - name: recommended_retail_price
+        description: "Prix de vente conseille au detail"
+      - name: tax_rate
+        description: "Taux de TVA en pourcentage"
+      - name: lead_time_days
+        description: "Delai de reapprovisionnement en jours"
+      - name: quantity_per_outer
+        description: "Nombre d'unites par carton"
+      - name: typical_weight_per_unit
+        description: "Poids unitaire typique en kg"
+
+  - name: dim_supplier
+    description: "Dimension fournisseurs."
+    columns:
+      - name: supplier_key
+        description: "Identifiant du fournisseur"
+        data_tests: [unique, not_null]
+      - name: supplier_name
+        description: "Nom du fournisseur"
+      - name: supplier_category
+        description: "Categorie de fournisseur"
+      - name: city
+        description: "Ville"
+      - name: state_province
+        description: "Etat / province"
+      - name: country
+        description: "Pays"
+      - name: payment_days
+        description: "Delai de paiement en jours"
+      - name: delivery_method
+        description: "Mode de livraison"
+      - name: website_url
+        description: "Site web"
+
+  - name: dim_employee
+    description: "Dimension employes (dont les commerciaux)."
+    columns:
+      - name: employee_key
+        description: "Identifiant de l'employe"
+        data_tests: [unique, not_null]
+      - name: employee_name
+        description: "Nom complet"
+      - name: preferred_name
+        description: "Prenom d'usage"
+      - name: email_address
+        description: "Adresse e-mail"
+      - name: is_salesperson
+        description: "Vrai si l'employe est commercial (vendeur)"
+
+  # ------------------------------------------------------------------ FAITS
+  - name: fct_sales
+    description: "Fait VENTES au grain ligne de facture. Table de reference pour le chiffre d'affaires (revenue_excl_tax), la marge (profit) et les quantites vendues."
+    columns:
+      - name: invoice_line_id
+        description: "Identifiant de la ligne de facture"
+        data_tests: [unique, not_null]
+      - name: invoice_id
+        description: "Numero de facture (compter distinct pour le nombre de factures)"
+      - name: order_id
+        description: "Commande d'origine"
+      - name: date_key
+        description: "Cle de date de facturation -> dim_date"
+        data_tests:
+          - not_null
+          - relationships: {arguments: {to: ref('dim_date'), field: date_key}}
+      - name: invoice_date
+        description: "Date de facturation"
+      - name: customer_key
+        description: "Client -> dim_customer"
+        data_tests:
+          - not_null
+          - relationships: {arguments: {to: ref('dim_customer'), field: customer_key}}
+      - name: product_key
+        description: "Produit -> dim_product"
+        data_tests:
+          - not_null
+          - relationships: {arguments: {to: ref('dim_product'), field: product_key}}
+      - name: salesperson_key
+        description: "Commercial -> dim_employee"
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_employee'), field: employee_key}}
+      - name: delivery_method
+        description: "Mode de livraison"
+      - name: is_credit_note
+        description: "Vrai si la facture est un avoir"
+      - name: quantity
+        description: "Quantite vendue"
+      - name: unit_price
+        description: "Prix unitaire HT"
+      - name: tax_rate
+        description: "Taux de TVA en pourcentage"
+      - name: revenue_excl_tax
+        description: "Chiffre d'affaires HORS TAXES de la ligne (mesure par defaut du CA)"
+      - name: tax_amount
+        description: "Montant de TVA"
+      - name: revenue_incl_tax
+        description: "Chiffre d'affaires TTC"
+      - name: cost_amount
+        description: "Cout d'achat des marchandises vendues"
+      - name: profit
+        description: "Marge / benefice de la ligne (CA HT - cout)"
+
+  - name: fct_orders
+    description: "Fait COMMANDES CLIENTS au grain ligne de commande (prises de commande, avant facturation)."
+    columns:
+      - name: order_line_id
+        description: "Identifiant de la ligne de commande"
+        data_tests: [unique, not_null]
+      - name: order_id
+        description: "Numero de commande (compter distinct pour le nombre de commandes)"
+      - name: date_key
+        description: "Cle de date de commande -> dim_date"
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_date'), field: date_key}}
+      - name: order_date
+        description: "Date de commande"
+      - name: expected_delivery_date
+        description: "Date de livraison prevue"
+      - name: customer_key
+        description: "Client -> dim_customer"
+      - name: product_key
+        description: "Produit -> dim_product"
+      - name: salesperson_key
+        description: "Commercial -> dim_employee"
+      - name: ordered_quantity
+        description: "Quantite commandee"
+      - name: picked_quantity
+        description: "Quantite preparee"
+      - name: unit_price
+        description: "Prix unitaire HT"
+      - name: order_amount_excl_tax
+        description: "Montant commande HT"
+      - name: has_backorder
+        description: "Vrai si une partie de la commande est en reliquat"
+      - name: is_picking_completed
+        description: "Vrai si la preparation est terminee"
+
+  - name: fct_purchases
+    description: "Fait ACHATS au grain ligne de bon de commande fournisseur."
+    columns:
+      - name: purchase_order_line_id
+        description: "Identifiant de la ligne d'achat"
+        data_tests: [unique, not_null]
+      - name: purchase_order_id
+        description: "Numero de bon de commande fournisseur"
+      - name: date_key
+        description: "Cle de date de commande -> dim_date"
+      - name: order_date
+        description: "Date de commande fournisseur"
+      - name: expected_delivery_date
+        description: "Date de livraison prevue"
+      - name: last_receipt_date
+        description: "Date de derniere reception"
+      - name: supplier_key
+        description: "Fournisseur -> dim_supplier"
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_supplier'), field: supplier_key}}
+      - name: product_key
+        description: "Produit -> dim_product"
+      - name: ordered_outers
+        description: "Nombre de cartons commandes"
+      - name: received_outers
+        description: "Nombre de cartons recus"
+      - name: expected_unit_price_per_outer
+        description: "Prix d'achat prevu par carton"
+      - name: purchase_amount
+        description: "Montant d'achat prevu (cartons x prix)"
+      - name: is_finalized
+        description: "Vrai si la ligne est cloturee"
+
+  - name: fct_stock
+    description: "Fait STOCK : niveau de stock actuel par produit."
+    columns:
+      - name: product_key
+        description: "Produit -> dim_product"
+        data_tests: [unique, not_null]
+      - name: quantity_on_hand
+        description: "Quantite en stock"
+      - name: bin_location
+        description: "Emplacement en entrepot"
+      - name: reorder_level
+        description: "Seuil de reapprovisionnement"
+      - name: target_stock_level
+        description: "Niveau de stock cible"
+      - name: last_cost_price
+        description: "Dernier prix de revient unitaire"
+      - name: stock_value
+        description: "Valeur du stock (quantite x prix de revient)"
+      - name: is_below_reorder_level
+        description: "Vrai si le stock est sous le seuil de reapprovisionnement"
+
+  - name: fct_customer_transactions
+    description: "Fait TRANSACTIONS FINANCIERES CLIENTS (factures ET paiements melanges) : a utiliser seulement pour les soldes restant dus. Pour les paiements, utiliser fct_customer_payments."
+    columns:
+      - name: customer_transaction_id
+        description: "Identifiant de la transaction"
+        data_tests: [unique, not_null]
+      - name: date_key
+        description: "Cle de date de transaction -> dim_date"
+      - name: transaction_date
+        description: "Date de la transaction"
+      - name: customer_key
+        description: "Client -> dim_customer"
+      - name: invoice_id
+        description: "Facture associee"
+      - name: transaction_type
+        description: "Type : Customer Invoice (facture), Customer Payment Received (paiement), Customer Credit Note (avoir)..."
+      - name: payment_method
+        description: "Moyen de paiement (EFT = virement) ; 'Aucun (facture)' pour les lignes de facture"
+      - name: amount_excluding_tax
+        description: "Montant HT (negatif pour un paiement)"
+      - name: tax_amount
+        description: "Montant de TVA"
+      - name: transaction_amount
+        description: "Montant TTC (negatif pour un paiement)"
+      - name: outstanding_balance
+        description: "Solde restant du sur la transaction"
+      - name: is_finalized
+        description: "Vrai si la transaction est soldee"
+      - name: finalization_date
+        description: "Date de solde"
+
+  - name: fct_customer_payments
+    description: "Fait PAIEMENTS CLIENTS : uniquement les paiements recus (une ligne = un paiement, montant positif). Table a utiliser pour toute question sur les paiements ou encaissements."
+    columns:
+      - name: payment_id
+        description: "Identifiant du paiement"
+        data_tests: [unique, not_null]
+      - name: date_key
+        description: "Cle de date du paiement -> dim_date"
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_date'), field: date_key}}
+      - name: payment_date
+        description: "Date du paiement"
+      - name: customer_key
+        description: "Client -> dim_customer"
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_customer'), field: customer_key}}
+      - name: payment_method
+        description: "Moyen de paiement (EFT = virement)"
+      - name: payment_amount
+        description: "Montant paye TTC (positif)"
+        data_tests:
+          - not_null
+      - name: payment_amount_excl_tax
+        description: "Montant paye HT (positif)"

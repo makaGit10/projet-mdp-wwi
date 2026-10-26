@@ -1,0 +1,61 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: Donnees brutes chargees par DLT depuis SQL Server WideWorldImporters (aucune transformation).
+    schema: bronze
+    tables:
+      - name: application_cities
+        description: "Villes"
+      - name: application_state_provinces
+        description: "Etats / provinces"
+      - name: application_countries
+        description: "Pays"
+      - name: application_delivery_methods
+        description: "Modes de livraison"
+      - name: application_payment_methods
+        description: "Moyens de paiement"
+      - name: application_people
+        description: "Personnes (employes, contacts)"
+      - name: application_transaction_types
+        description: "Types de transactions"
+      - name: sales_customers
+        description: "Clients"
+      - name: sales_customer_categories
+        description: "Categories de clients"
+      - name: sales_buying_groups
+        description: "Groupements d'achat"
+      - name: sales_orders
+        description: "Commandes clients"
+      - name: sales_order_lines
+        description: "Lignes de commandes clients"
+      - name: sales_invoices
+        description: "Factures"
+      - name: sales_invoice_lines
+        description: "Lignes de factures"
+      - name: sales_customer_transactions
+        description: "Transactions financieres clients (factures, paiements)"
+      - name: purchasing_suppliers
+        description: "Fournisseurs"
+      - name: purchasing_supplier_categories
+        description: "Categories de fournisseurs"
+      - name: purchasing_purchase_orders
+        description: "Bons de commande fournisseurs"
+      - name: purchasing_purchase_order_lines
+        description: "Lignes de bons de commande"
+      - name: purchasing_supplier_transactions
+        description: "Transactions financieres fournisseurs"
+      - name: warehouse_stock_items
+        description: "Articles (produits)"
+      - name: warehouse_stock_item_holdings
+        description: "Niveaux de stock par article"
+      - name: warehouse_stock_groups
+        description: "Groupes de stock (familles de produits)"
+      - name: warehouse_stock_item_stock_groups
+        description: "Association article / groupe de stock"
+      - name: warehouse_colors
+        description: "Couleurs"
+      - name: warehouse_package_types
+        description: "Types de conditionnement"
+      - name: warehouse_stock_item_transactions
+        description: "Mouvements de stock"

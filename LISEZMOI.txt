@@ -1,0 +1,77 @@
+==========================================================================
+ PROJET PRATIQUE BI - Modern Data Platform et application Text-to-SQL
+ Marème MAKALOU & Binetou Mbacké NDIAYE - M2 BI, UCAD - 2025-2026
+ Professeur : Dr Jean Gane SARR
+==========================================================================
+
+POUR VOIR LE PROJET FONCTIONNER SANS RIEN INSTALLER
+---------------------------------------------------
+  >>> Ouvrir la vidéo  Demo_MDP_WWI_MAKALOU_NDIAYE.mp4  (3 minutes) <<<
+  Elle montre l'application (questions en français, réponses de l'IA,
+  tableau de bord), l'orchestration Dagster et la documentation dbt.
+  L'installation décrite plus bas n'est nécessaire que pour exécuter le
+  projet sur un autre poste.
+
+
+CONTENU DU DOSSIER
+------------------
+  Demo_MDP_WWI_MAKALOU_NDIAYE.mp4      vidéo de démonstration (3 min)
+  Rapport_MDP_WWI_MAKALOU_NDIAYE.pdf   le rapport du projet
+  projet_mdp_wwi\                      le code source complet
+      LANCER.bat                       >>> MENU DE LANCEMENT (double-clic) <<<
+      README.md                        documentation technique
+      snowflake\setup.sql              initialisation du compte Snowflake
+      ingestion\  dbt_wwi\  orchestration\  app\   les briques du projet
+
+
+LANCER LE PROJET
+----------------
+Double-cliquer sur  projet_mdp_wwi\LANCER.bat .
+Au tout premier lancement, l'installation démarre automatiquement (5 à 10 min).
+Ensuite, un menu s'affiche :
+
+  1. Lancer l'application (assistant IA + tableau de bord)
+  2. Ouvrir Dagster (orchestration du pipeline)
+  3. Ouvrir la documentation dbt (lignage des données)
+  4. Exécuter tout le pipeline (SQL Server -> Bronze -> Silver -> Gold)
+  5. Vérifier les connexions (SQL Server, Snowflake, IA)
+  0. Réinstaller / mettre à jour les dépendances
+
+
+PREMIÈRE UTILISATION SUR UN NOUVEAU POSTE
+-----------------------------------------
+Prérequis à installer :
+  - SQL Server avec la base WideWorldImporters (sauvegarde officielle Microsoft
+    WideWorldImporters-Full.bak) et le pilote "ODBC Driver 18 for SQL Server"
+  - Python 3.12            https://www.python.org/downloads/
+  - une clé Groq gratuite https://console.groq.com/keys  (IA open source rapide)
+  - Ollama (IA locale)     https://ollama.com/download    (secours sans Internet)
+  - un compte Snowflake    https://signup.snowflake.com/
+
+Étapes :
+  0. Copier le dossier projet_mdp_wwi dans un chemin COURT, hors OneDrive
+     (ex : C:\projet_mdp_wwi). Windows limite la longueur des chemins de
+     fichiers : un dossier trop profond fait échouer l'installation.
+  1. Double-cliquer sur LANCER.bat : l'installation automatique installe les
+     dépendances Python, crée le fichier de configuration .env, génère une
+     clé de sécurité pour Snowflake et télécharge le modèle d'IA.
+  2. Dans Snowflake (Snowsight, rôle ACCOUNTADMIN) : ouvrir une feuille SQL,
+     coller TOUT le fichier snowflake\setup.sql, le sélectionner (Ctrl+A)
+     puis l'exécuter.
+  3. Copier la valeur "account" affichée à la fin dans le fichier .env
+     (ligne SNOWFLAKE_ACCOUNT=). Si SQL Server n'est pas l'instance par défaut
+     du poste, adapter aussi MSSQL_SERVER (ex : localhost\SQLEXPRESS).
+     Coller la clé Groq dans la ligne GROQ_API_KEY= du même fichier .env.
+  4. LANCER.bat -> option 5 pour vérifier, option 4 pour charger les données
+     (environ 5 minutes), puis option 1 pour l'application.
+
+
+REMARQUES
+---------
+  - L'IA utilise des modèles open source (GPT-OSS, Qwen) hébergés par Groq :
+    réponse en 1 à 5 secondes. Sans clé Groq ou sans Internet, l'application
+    bascule sur le modèle local Ollama (15 à 40 secondes par question).
+  - Snowflake Cortex AI n'est pas disponible sur les comptes d'essai ; il reste
+    sélectionnable dans l'application pour un compte payant (rapport, 7.5).
+  - Le fichier .env (clé Groq) et la clé privée Snowflake (dossier keys) ne
+    sont volontairement pas fournis : ils sont propres à chaque poste.

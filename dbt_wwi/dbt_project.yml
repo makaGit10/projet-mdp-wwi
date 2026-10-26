@@ -1,0 +1,24 @@
+name: wwi
+version: "1.0.0"
+config-version: 2
+profile: wwi
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  wwi:
+    silver:
+      +schema: silver
+      +materialized: table
+      +tags: ["silver"]
+    gold:
+      +schema: gold
+      +materialized: table
+      +tags: ["gold"]
+      +persist_docs:
+        relation: true
+        columns: true

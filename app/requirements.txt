@@ -1,0 +1,9 @@
+# Dependances de l'application seule (utilisees par Streamlit Cloud pour la version en ligne)
+streamlit==1.65.0
+snowflake-connector-python[pandas]==4.8.0
+pandas==2.3.3
+plotly==7.1.0
+sqlglot==30.22.0
+requests==2.34.2
+python-dotenv==1.2.4
+cryptography==50.0.2

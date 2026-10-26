@@ -1,0 +1,56 @@
+-- =====================================================================
+--  Modern Data Platform WWI - Initialisation du compte Snowflake
+--  A executer UNE FOIS dans une feuille de calcul Snowsight (role ACCOUNTADMIN)
+-- =====================================================================
+USE ROLE ACCOUNTADMIN;
+
+-- 1. Ressources de calcul et de stockage
+CREATE WAREHOUSE IF NOT EXISTS WWI_WH
+  WAREHOUSE_SIZE = XSMALL AUTO_SUSPEND = 60 AUTO_RESUME = TRUE INITIALLY_SUSPENDED = TRUE;
+
+CREATE DATABASE IF NOT EXISTS WWI_MDP;
+CREATE SCHEMA IF NOT EXISTS WWI_MDP.BRONZE COMMENT = 'Donnees brutes chargees par DLT depuis SQL Server';
+CREATE SCHEMA IF NOT EXISTS WWI_MDP.SILVER COMMENT = 'Donnees nettoyees et normalisees (dbt)';
+CREATE SCHEMA IF NOT EXISTS WWI_MDP.GOLD   COMMENT = 'Modele en etoile pour l analyse decisionnelle (dbt)';
+
+-- 2. Role technique : ingestion (DLT) + transformations (dbt)
+CREATE ROLE IF NOT EXISTS WWI_ROLE;
+GRANT USAGE ON WAREHOUSE WWI_WH TO ROLE WWI_ROLE;
+GRANT ALL ON DATABASE WWI_MDP TO ROLE WWI_ROLE;
+GRANT ALL ON ALL SCHEMAS IN DATABASE WWI_MDP TO ROLE WWI_ROLE;
+GRANT ROLE WWI_ROLE TO ROLE SYSADMIN;
+
+-- 3. Role applicatif en LECTURE SEULE sur GOLD (utilise par Streamlit / Text-to-SQL)
+CREATE ROLE IF NOT EXISTS WWI_READER;
+GRANT USAGE ON WAREHOUSE WWI_WH TO ROLE WWI_READER;
+GRANT USAGE ON DATABASE WWI_MDP TO ROLE WWI_READER;
+GRANT USAGE ON SCHEMA WWI_MDP.GOLD TO ROLE WWI_READER;
+GRANT SELECT ON ALL TABLES IN SCHEMA WWI_MDP.GOLD TO ROLE WWI_READER;
+GRANT SELECT ON FUTURE TABLES IN SCHEMA WWI_MDP.GOLD TO ROLE WWI_READER;
+GRANT SELECT ON FUTURE VIEWS IN SCHEMA WWI_MDP.GOLD TO ROLE WWI_READER;
+GRANT ROLE WWI_READER TO ROLE SYSADMIN;
+
+-- 4. Utilisateur de service (authentification par paire de cles, sans mot de passe)
+CREATE USER IF NOT EXISTS WWI_SVC
+  TYPE = SERVICE
+  DEFAULT_ROLE = WWI_ROLE
+  DEFAULT_WAREHOUSE = WWI_WH
+  COMMENT = 'Compte technique DLT / dbt / Dagster / Streamlit';
+ALTER USER WWI_SVC SET RSA_PUBLIC_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAztYs9sSVrb7hWlJWW6nHAS9qR5w/lfvl/sIPtbFVmjOJmq4CZCrA7zdxxbV/n7cGsuadFV3eA0ms2CVr3EPtPW4/5myUDR9wiZQ4CaR+6IVsA4j5TWfRFxGO6LhI0F9ZDnhMaCyBTzT+qe7M4DYrid44XN/8F+1JtaEicUy4L6VztPQvIF4vOoUi5SD/eijJK9FpnA5JYTwlfod9NxkSYFO7oMmpOBhUhoMcghg2f0q2dT1h0UilgqSEvPqkQH2fRzj0C8ImbFQ6XFQlXefZql1hz/257UYrYIUQ4yO3f39bsAYvElQxowOvOZEI/yt70cYsiFoEhO082CyRIUMD8QIDAQAB';
+GRANT ROLE WWI_ROLE   TO USER WWI_SVC;
+GRANT ROLE WWI_READER TO USER WWI_SVC;
+-- Pas de roles secondaires : chaque session n'a que les droits du role choisi
+ALTER USER WWI_SVC SET DEFAULT_SECONDARY_ROLES = ();
+
+-- 5. Snowflake Cortex AI
+GRANT DATABASE ROLE SNOWFLAKE.CORTEX_USER TO ROLE WWI_READER;
+GRANT DATABASE ROLE SNOWFLAKE.CORTEX_USER TO ROLE WWI_ROLE;
+-- Autorise l'appel aux modeles heberges dans une autre region si besoin
+ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'ANY_REGION';
+
+-- 6. Verification : copiez la valeur de la colonne "account" dans le fichier .env
+--    et verifiez que key_fp = SHA256:JpIpQb22EDZOtIw9QpgftmsLi3jfZmcRapoVLuDvKbs=
+SELECT CURRENT_ORGANIZATION_NAME() || '-' || CURRENT_ACCOUNT_NAME() AS account,
+       CURRENT_REGION() AS region;
+
+DESC USER WWI_SVC;

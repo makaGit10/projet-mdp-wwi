@@ -1,0 +1,111 @@
+version: 2
+
+models:
+  - name: slv_buying_groups
+    columns:
+      - name: buying_group_id
+        data_tests: [unique, not_null]
+  - name: slv_cities
+    columns:
+      - name: city_id
+        data_tests: [unique, not_null]
+  - name: slv_colors
+    columns:
+      - name: color_id
+        data_tests: [unique, not_null]
+  - name: slv_countries
+    columns:
+      - name: country_id
+        data_tests: [unique, not_null]
+  - name: slv_customer_categories
+    columns:
+      - name: customer_category_id
+        data_tests: [unique, not_null]
+  - name: slv_customer_transactions
+    columns:
+      - name: customer_transaction_id
+        data_tests: [unique, not_null]
+  - name: slv_customers
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+  - name: slv_delivery_methods
+    columns:
+      - name: delivery_method_id
+        data_tests: [unique, not_null]
+  - name: slv_invoice_lines
+    columns:
+      - name: invoice_line_id
+        data_tests: [unique, not_null]
+  - name: slv_invoices
+    columns:
+      - name: invoice_id
+        data_tests: [unique, not_null]
+  - name: slv_order_lines
+    columns:
+      - name: order_line_id
+        data_tests: [unique, not_null]
+  - name: slv_orders
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+  - name: slv_package_types
+    columns:
+      - name: package_type_id
+        data_tests: [unique, not_null]
+  - name: slv_payment_methods
+    columns:
+      - name: payment_method_id
+        data_tests: [unique, not_null]
+  - name: slv_people
+    columns:
+      - name: person_id
+        data_tests: [unique, not_null]
+  - name: slv_purchase_order_lines
+    columns:
+      - name: purchase_order_line_id
+        data_tests: [unique, not_null]
+  - name: slv_purchase_orders
+    columns:
+      - name: purchase_order_id
+        data_tests: [unique, not_null]
+  - name: slv_state_provinces
+    columns:
+      - name: state_province_id
+        data_tests: [unique, not_null]
+  - name: slv_stock_groups
+    columns:
+      - name: stock_group_id
+        data_tests: [unique, not_null]
+  - name: slv_stock_item_holdings
+    columns:
+      - name: stock_item_id
+        data_tests: [unique, not_null]
+  - name: slv_stock_item_stock_groups
+    columns:
+      - name: stock_item_stock_group_id
+        data_tests: [unique, not_null]
+  - name: slv_stock_item_transactions
+    columns:
+      - name: stock_item_transaction_id
+        data_tests: [unique, not_null]
+  - name: slv_stock_items
+    columns:
+      - name: stock_item_id
+        data_tests: [unique, not_null]
+  - name: slv_supplier_categories
+    columns:
+      - name: supplier_category_id
+        data_tests: [unique, not_null]
+  - name: slv_supplier_transactions
+    columns:
+      - name: supplier_transaction_id
+        data_tests: [unique, not_null]
+  - name: slv_suppliers
+    columns:
+      - name: supplier_id
+        data_tests: [unique, not_null]
+  - name: slv_transaction_types
+    columns:
+      - name: transaction_type_id
+        data_tests: [unique, not_null]

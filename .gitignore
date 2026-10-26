@@ -1,0 +1,15 @@
+.venv/
+.env
+keys/
+__pycache__/
+*.pyc
+.dlt/
+dbt_wwi/target/
+dbt_wwi/logs/
+dbt_wwi/dbt_packages/
+.dagster_home/
+pip_*.log
+dbt_wwi/.user.yml
+snowflake/fix_key.sql
+*.duckdb
+.streamlit/secrets.toml
